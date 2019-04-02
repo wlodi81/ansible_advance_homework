@@ -1,10 +1,65 @@
 ---
 
 # tasks file for osp.servers
+#
+- name: Add dynamic host to inventory
+  add_host:
+    name: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+    groups: workstations
+    ansible_user: cloud-user
+  register: out
+
+
+
 - name: Create new server instances and attaches them a network and passes metadata to the instance
+  os_server:
+    name: "{{ item.value.name }}"
+    state: "{{ item.value.state }}"
+    image: "{{ item.value.image }}"
+    key_name: "{{ item.value.key_name }}"
+    flavor: "{{ item.value.flavor }}"
+    security_groups: "{{ item.value.security_group }}"
+    network: int_network
+    meta:
+      group: "{{ item.value.meta[0].group }}"
+      deployment_name: "{{ item.value.meta[0].deployment_name }}"
+  loop: "{{ osp_servers|dict2items }}"
+  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+
+- name: Add router to the project
+  os_router:
+    state: present
+    name: router-instance
+    network: ext_network
+  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+
+
+# - debug:
+#     msg: "{{item.value.meta[0].deployment_name}}"
+#   loop: "{{osp_servers|dict2items}}"
 
 
 - name: Add floating IP to Servers
-   
+  os_floating_ip:
+    state: present
+    reuse: yes
+    server: "{{ item.value.name }}"
+    network: ext_network
+    wait: true
+    timeout: 180
+  loop: "{{ osp_servers|dict2items }}"
+  register: floaters
+  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+
+- name: test
+  os_server_facts:
+  register: outout
+  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+
+
+
+
+- debug: var=floaters
 
 - name: Wait for server to be available
+  command: "echo /bin/true"
