@@ -1,4 +1,5 @@
 - hosts: localhost
-  become: yes
+  become: no
+  gather_facts: false
   roles:
     - osp-servers
