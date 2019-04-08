@@ -9,6 +9,24 @@
     ansible_user: cloud-user
   register: out
 
+- name: copy openstack.pub and openstack.pem to workstation
+  copy:
+    src: "{{ item }}"
+    dest: ~/.ssh/
+  loop:
+    - ~/.ssh/openstack.pem
+    - ~/.ssh/openstack.pub
+    - ~/.ssh/mykey.pem
+  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+
+
+# - name: Create keypair
+#   os_keypair:
+#     state: present
+#     name: os_key
+#     key: /home/cloud-user/.ssh/openstack.pem
+#     public_key_file: /home/cloud-user/.ssh/openstack.pub
+#   delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
 
 - name: Create new server instances and attaches them a network and passes metadata to the instance
@@ -42,7 +60,7 @@
 - name: Add floating IP to Servers
   os_floating_ip:
     state: present
-    reuse: yes
+    reuse: true
     server: "{{ item.value.name }}"
     network: ext_network
     wait: true
