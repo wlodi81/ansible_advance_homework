@@ -13,20 +13,21 @@
   copy:
     src: "{{ item }}"
     dest: ~/.ssh/
+    mode: 0600
   loop:
     - ~/.ssh/openstack.pem
     - ~/.ssh/openstack.pub
     - ~/.ssh/mykey.pem
-  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+#  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
 
-# - name: Create keypair
-#   os_keypair:
-#     state: present
-#     name: os_key
+- name: Create keypair
+  os_keypair:
+    state: present
+    name: os_key
 #     key: /home/cloud-user/.ssh/openstack.pem
-#     public_key_file: /home/cloud-user/.ssh/openstack.pub
-#   delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+    public_key_file: /home/cloud-user/.ssh/openstack.pub
+#  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
 
 - name: Create new server instances and attaches them a network and passes metadata to the instance
@@ -34,7 +35,8 @@
     name: "{{ item.value.name }}"
     state: "{{ item.value.state }}"
     image: "{{ item.value.image }}"
-    key_name: "{{ item.value.key_name }}"
+#     key_name: "{{ item.value.key_name }}"
+    key_name: os_key
     flavor: "{{ item.value.flavor }}"
     security_groups: "{{ item.value.security_group }}"
     network: int_network
@@ -42,14 +44,14 @@
       group: "{{ item.value.meta[0].group }}"
       deployment_name: "{{ item.value.meta[0].deployment_name }}"
   loop: "{{ osp_servers|dict2items }}"
-  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+#  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
 - name: Add router to the project
   os_router:
     state: present
     name: router-instance
     network: ext_network
-  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+#  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
 
 # - debug:
@@ -67,12 +69,12 @@
     timeout: 180
   loop: "{{ osp_servers|dict2items }}"
   register: floaters
-  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+#  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
 - name: test
   os_server_facts:
   register: outout
-  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+#  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
 
 

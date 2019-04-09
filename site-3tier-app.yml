@@ -1,5 +1,5 @@
 - hosts: workstation
-  gather_facts: true
+  gather_facts: false
   roles:
   - name: osp-facts
 
@@ -8,6 +8,7 @@
 
 - name: setup load-balancer tier
   hosts: frontends
+  gather_facts: false
   become: yes
   roles:
     - {name: base-config, tags: base-config}
@@ -28,6 +29,7 @@
 - name: setup database tier
   become: yes
   hosts: appdbs
+  gather_facts: false
   roles:
     - {name: base-config, tags: base-config}
     - {name: db-tier, tags: [dbs, postgres]}

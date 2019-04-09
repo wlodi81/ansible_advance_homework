@@ -1,5 +1,5 @@
-- hosts: localhost
-  become: no
+- hosts: workstation
+  become: yes
   gather_facts: false
   roles:
     - osp-servers
