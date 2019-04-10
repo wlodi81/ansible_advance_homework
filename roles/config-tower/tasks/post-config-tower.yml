@@ -1,4 +1,15 @@
 - name: Create Homework Assignment project 
+  tower_project:
+    name: "{{ proj_name }}"
+    description: "Homework Assignment Project"
+    state: present
+    scm_type: git
+    scm_branch: "{{ scm_branch }}"
+#     scm_credential: "{{ aws_cred_name }}"
+    scm_update_on_launch: true
+    scm_url: "{{ scm_url }}"
+    organization: "{{ org_name }}"
+    tower_verify_ssl: false
 # Use tower module or tower-cli to create Ansible Tower project. Name of the project is specifed in ./vars/main.yml
 
 - name: Machine Credentail to connect to workstation using openstack.pub
@@ -11,6 +22,7 @@
     tower_username: admin
     tower_password: r3dh4t1!
     ssh_key_data: "/root/.ssh/openstack.pem"
+    tower_verify_ssl: false
     username: cloud-user
 
 - name: Create Inventory
@@ -22,6 +34,7 @@
     tower-cli group create --inventory "{{static_inventory_name}}"  --name {{group_name}}
 
 - name: Add workstation host in tower_inventory 
+  become: true
   command: |
     tower-cli host create --inventory "{{static_inventory_name}}" --name "{{host_name}}"
 
