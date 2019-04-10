@@ -1,2 +1,15 @@
 ---
-# tasks file for db-tier
+# - name: install {{ component }}
+#   yum:
+#     name: "{{ component }}"
+#     state: latest
+# 
+# - name: enable {{ component }} at boot
+#   service:
+#     name: "{{ component }}"
+#     enabled: yes
+# - name: start {{ component }}
+#   service:
+#     name: "{{ component }}"
+#     state: restarted
+# 

@@ -2,22 +2,23 @@
 
 # tasks file for osp.servers
 #
-- name: Add dynamic host to inventory
-  add_host:
-    name: workstation-{{OSP_GUID}}.rhpds.opentlc.com
-    groups: workstations
-    ansible_user: cloud-user
-  register: out
+# - name: Add dynamic host to inventory
+#   add_host:
+#     name: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+#     groups: workstations
+#     ansible_user: cloud-user
+#   register: out
 
 - name: copy openstack.pub and openstack.pem to workstation
   copy:
     src: "{{ item }}"
-    dest: ~/.ssh/
+    dest: /home/cloud-user/.ssh/
+    owner: cloud-user
+    group: cloud-user
     mode: 0600
   loop:
     - ~/.ssh/openstack.pem
     - ~/.ssh/openstack.pub
-    - ~/.ssh/mykey.pem
 #  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
 

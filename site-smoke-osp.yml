@@ -9,6 +9,14 @@
     tags:
       - osp.smoke
   - name: Curl website
+    uri:
+      url: "http://{{ item.public_v4 }}"
+      method: GET
+      return_content: true
+    loop: "{{ openstack_info.ansible_facts.openstack_servers }}"
+    register: webpage
+
+  - debug: var=webpage
 
   - name: Fail if 'Ansible has done its job' is not in the page content
     fail:

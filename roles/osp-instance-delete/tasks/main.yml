@@ -33,3 +33,17 @@
   os_router:
     state: absent
     name: router-instance
+
+- name: delete keypair
+  os_keypair:
+    name: os_key
+    state: absent
+
+- name: remove copied certificates
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - /home/cloud-user/.ssh/openstack.pem
+    - /home/cloud-user/.ssh/openstack.pub
+  
