@@ -1,0 +1,2 @@
+- wait for server in instance deploy, ping with wait_for
+

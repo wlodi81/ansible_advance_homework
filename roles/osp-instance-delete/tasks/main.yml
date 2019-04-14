@@ -1,18 +1,18 @@
 ---
 # tasks file for roles/osp-instance-delete
-- name: add workstation to inventory    
-  add_host:
-    name: workstation-{{OSP_GUID}}.rhpds.opentlc.com
-    groups: workstations
-    ansible_user: cloud-user
-  register: out
-
-
+# - name: add workstation to inventory    
+#   add_host:
+#     name: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+#     groups: workstations
+#     ansible_user: cloud-user
+#   register: out
+# 
+# 
 
 - name: Fetch Instance Info
   os_server_facts:
   register: bip
-  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+#   delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
 
 - debug: var=openstack_servers

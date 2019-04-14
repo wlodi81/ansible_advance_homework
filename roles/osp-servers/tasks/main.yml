@@ -45,6 +45,7 @@
       group: "{{ item.value.meta[0].group }}"
       deployment_name: "{{ item.value.meta[0].deployment_name }}"
   loop: "{{ osp_servers|dict2items }}"
+
 #  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
 - name: Add router to the project
@@ -72,15 +73,20 @@
   register: floaters
 #  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
-- name: test
+- name: get server details
   os_server_facts:
-  register: outout
-#  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
+  register: serverfacts
+#   delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
 
 
+# - debug: var=floaters
 
-- debug: var=floaters
-
-- name: Wait for server to be available
-  command: "echo /bin/true"
+- name: Wait for servers to be available
+  wait_for:
+    host: "{{ item.public_v4 }}"
+    port: 22
+    delay: 10
+    timeout: 300
+  loop: "{{ serverfacts.ansible_facts.openstack_servers }}"
+  when: item.metadata.deployment_name == "QA"
