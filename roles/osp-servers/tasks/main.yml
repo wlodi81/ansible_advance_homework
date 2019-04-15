@@ -123,3 +123,12 @@
     timeout: 300
   loop: "{{ serverfacts.ansible_facts.openstack_servers }}"
   when: item.metadata.deployment_name == "QA"
+
+- name: enable repos
+  template:
+    src: internal.repo.j2
+    dest: /etc/yum.repos.d/internal.repo
+    mode: 0644
+
+
+
