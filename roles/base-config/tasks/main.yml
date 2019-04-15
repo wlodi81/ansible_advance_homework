@@ -9,12 +9,19 @@
 # - name: test
 #   ping:
 
+# 
+# - name: enable repos
+#   template:
+#     src: internal.repo.j2
+#     dest: /etc/yum.repos.d/internal.repo
+#     mode: 0644
 
-- name: enable repos
-  template:
-    src: internal.repo.j2
-    dest: /etc/yum.repos.d/internal.repo
-    mode: 0644
+- name: delete repo file
+  file:
+    path: /etc/yum.repos.d/internal.repo
+    state: absent
+    force: true
+
 
 - name: install base tools and packages
   yum:
