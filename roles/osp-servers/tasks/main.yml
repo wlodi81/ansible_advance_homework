@@ -77,6 +77,37 @@
     meta:
       group: "{{ item.value.meta[0].group }}"
       deployment_name: "{{ item.value.meta[0].deployment_name }}"
+    userdata: |
+      #cloud-config
+      write_files:
+        owner: root:root
+        permissions: 0644
+        path: /etc/yum.repos.d/internal.repo
+        content: |
+          [rhel-7-server-rpms]
+          name=Red Hat Enterprise Linux 7
+          baseurl=http://192.168.0.5/repos/rhel-7-server-rpms
+          enabled=1
+          gpgcheck=0
+          
+          [rhel-7-server-rh-common-rpms]
+          name=Red Hat Enterprise Linux 7 Common
+          baseurl=http://192.168.0.5/repos/rhel-7-server-rh-common-rpms
+          enabled=1
+          gpgcheck=0
+          
+          [rhel-7-server-extras-rpms]
+          name=Red Hat Enterprise Linux 7 Extras
+          baseurl=http://192.168.0.5/repos/rhel-7-server-extras-rpms
+          enabled=1
+          gpgcheck=0
+          
+          [rhel-7-server-optional-rpms]
+          name=Red Hat Enterprise Linux 7 Optional
+          baseurl=http://192.168.0.5/repos/rhel-7-server-optional-rpms
+          enabled=1
+          gpgcheck=0
+
   loop: "{{ osp_servers|dict2items }}"
 
 #  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
@@ -124,11 +155,11 @@
   loop: "{{ serverfacts.ansible_facts.openstack_servers }}"
   when: item.metadata.deployment_name == "QA"
 
-- name: enable repos
-  template:
-    src: internal.repo.j2
-    dest: /etc/yum.repos.d/internal.repo
-    mode: 0644
+# - name: enable repos
+#   template:
+#     src: internal.repo.j2
+#     dest: /etc/yum.repos.d/internal.repo
+#     mode: 0644
 
 
 
