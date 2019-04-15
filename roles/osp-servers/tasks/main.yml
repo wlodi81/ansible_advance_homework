@@ -78,7 +78,7 @@
       group: "{{ item.value.meta[0].group }}"
       deployment_name: "{{ item.value.meta[0].deployment_name }}"
     userdata: |
-      {% raw %}
+      {% raw %}#!/bin/bash
        cat << EOF > /etc/yum.repos.d/internal.repo
        [rhel-7-server-rpms]
        name=Red Hat Enterprise Linux 7
