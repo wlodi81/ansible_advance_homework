@@ -1,5 +1,20 @@
-- hosts: frontends
-  gather_facts: false
+- name: Smoketest for production environments
+  hosts: frontends
+  gather_facts: true
   tasks:
+  - debug: var=ansible_facts
+
   - name: Use Uri module for wrting smoke test.
+    uri:
+      url: http://localhost
+      method: GET
+      return_content: true
+    register: smokeaws
+    tags:
+      - aws.smoke
+
   - name: Fail if 'Ansible has done its job' is not in the page content
+    fail:
+    when: "'Ansible has done its job' not in smokeaws.results[0].content"
+    tags:
+      - aws.smoke
