@@ -2,20 +2,7 @@
   hosts: frontends
   gather_facts: true
   tasks:
-
-  - name: install boto3
-    become: true
-    yum:
-      name: python2-boto3
-
-  - ec2_instance_facts:
-      region: us-east-1
-      filters:
-        "tag:instance_filter": three-tier-app-pawel.wlodarczyk*
-    register: outoutout
-
-  - debug: var=outoutout
-
+  - debug: var=hostvars
   - name: Checking if website available localy
     uri:
       url: http://localhost
