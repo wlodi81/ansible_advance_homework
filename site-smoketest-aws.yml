@@ -2,9 +2,15 @@
   hosts: frontends
   gather_facts: true
   tasks:
-  - debug: var=ansible_facts
 
-  - name: Use Uri module for wrting smoke test.
+  - ec2_instance_facts:
+      filters:
+        "tag:instance_filter": three-tier-app-pawel.wlodarczyk*
+    register: outoutout
+
+  - debug: var=outoutout
+
+  - name: Checking if website available localy
     uri:
       url: http://localhost
       method: GET
@@ -13,7 +19,7 @@
     tags:
       - aws.smoke
 
-  - debug: msg="{{ smokeaws }}"
+#  - debug: msg="{{ smokeaws }}"
 
 
   - name: Fail if 'Ansible has done its job' is not in the page content
