@@ -2,7 +2,7 @@
   hosts: frontends
   gather_facts: true
   tasks:
-  - debug: var=groups['frontends']
+  - debug: msg="hostvars[{{groups['frontends'][0]}}]"
   - name: Checking if website available localy
     uri:
       url: http://localhost
