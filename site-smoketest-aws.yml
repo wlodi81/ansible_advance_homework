@@ -3,6 +3,10 @@
   gather_facts: true
   tasks:
 
+  - name: install boto3
+    yum:
+      name: python2-boto3
+
   - ec2_instance_facts:
       filters:
         "tag:instance_filter": three-tier-app-pawel.wlodarczyk*
