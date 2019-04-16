@@ -2,10 +2,10 @@
   hosts: frontends
   gather_facts: true
   tasks:
-  - debug: var=hostvars["{{groups['frontends'][0]}}"]
+#   - debug: var=hostvars["{{groups['frontends'][0]}}"]
   - name: Checking if website available localy
     uri:
-      url: http://localhost
+      url: "http://{{groups['frontends'][0]}}"
       method: GET
       return_content: true
     register: smokeaws
