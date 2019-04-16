@@ -9,6 +9,7 @@
       name: python2-boto3
 
   - ec2_instance_facts:
+      region: us-east-1
       filters:
         "tag:instance_filter": three-tier-app-pawel.wlodarczyk*
     register: outoutout
