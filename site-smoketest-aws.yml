@@ -13,7 +13,7 @@
     tags:
       - aws.smoke
 
-  - debug: msg="{{ smokeaws.results}}"
+  - debug: msg="{{ smokeaws }}"
 
 
   - name: Fail if 'Ansible has done its job' is not in the page content
