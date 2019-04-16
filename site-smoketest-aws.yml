@@ -8,13 +8,12 @@
       url: "http://{{groups['frontends'][0]}}"
       method: GET
       return_content: true
-    register: smokeaws
     tags:
       - aws.smoke
 
 #  - debug: msg="{{ smokeaws }}"
 
-  - name: Checking if website available localy
+  - name: Checking if website available globaly
     uri:
       url: "http://{{groups['frontends'][0]}}"
       method: GET
