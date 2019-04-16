@@ -2,7 +2,7 @@
   hosts: frontends
   gather_facts: true
   tasks:
-  - debug: var=hostvars[frontend1]
+  - debug: var=hostvars['frontend1']
   - name: Checking if website available localy
     uri:
       url: http://localhost
