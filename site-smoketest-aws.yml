@@ -4,6 +4,7 @@
   tasks:
 
   - name: install boto3
+    become: true
     yum:
       name: python2-boto3
 
