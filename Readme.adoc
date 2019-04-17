@@ -110,8 +110,7 @@ To prepare environment, pleaes run the below setup
 
 
 ===== 20%: Provision QA Environment (including smoke test)
-limitation: 
-*for the moment the openstack certificates are added statically. This is because there was an error during opennstack keypair creation because certificates contained "ANSIBLE MANAGED" lines and could not be parsed propperly by os_keypair module
+* for the moment the openstack certificates are added statically. This is because there was an error during opennstack keypair creation because certificates contained "ANSIBLE MANAGED" lines and could not be parsed propperly by os_keypair module
 * internal repository is injected through a raw script, through userdata in os_server module because cloud-init write_files function was generating python exception. Repository server IP is specified through repo_ip variable and instances along with their details, flavours, etc. are taken from vars directory for osp_servers variable and looped through values.
 * floating IP addresses are assigned to all instnaces in the project. With additional time this would have to be changed so that floating IP is only assigned to frontend server and delegation is used to configure the backend app servers and db server, as only external communication will be happening from frontend
 * after instance deployment the play waits for instances to be available on port 22 as this is the port that will be used for further configuration. The timeout for waiting on instance availability was set to 300 seconds.
