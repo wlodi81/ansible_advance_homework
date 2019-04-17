@@ -14,8 +14,9 @@
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
     mode: 0644
+  notify: restart {{ component }}
 
-- name: start {{ component }}
-  service:
-    name: "{{ component }}"
-    state: restarted
+# - name: restart {{ component }} after applying changes
+#   service:
+#     name: "{{ component }}"
+#     state: restarted

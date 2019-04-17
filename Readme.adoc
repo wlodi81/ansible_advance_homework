@@ -1,3 +1,32 @@
+==== Requirements
+
+* The workflow script assumes that workstation node that serves as an isolated node in Tower is already configured
+* The deployment assumes that Tower environment is prepared 
+
+To prepare environment, pleaes run the below setup
+
+==== Workstation setup
+
+* Copy your OpenTLC private key to the bastion host under the root user’s home directory and save it under '/root/.ssh/mykey.pem'
+
+[source,text]
+----
+[bastion]# chmod 0400 /root/.ssh/mykey.pem 
+[bastion]# chown root:root /root/.ssh/mykey.pem
+----
+
+* From cloned repo run 'site-setup-workstation.yml' to configure osp workstation as Tower isolated node and prepare Openstack environment for deployment.
+
+[source,text]
+----
+[bastion]$ sudo -i
+[bastion]# cd ansible_advance_homework
+[bastion]# OSP_GUID=<Openstack for Ansible GUID from mail>
+[bastion]# OPENTLC_LOGIN=<username-company.com>
+[bastion]# ansible-playbook site-setup-workstation.yml -e OSP_GUID=${OSP_GUID} --private-key=/root/.ssh/mykey.pem -u ${OPENTLC_LOGIN}
+----
+
+
 ==== Ansible Tower Config
 
 
@@ -18,34 +47,6 @@
 [bastion]# ansible-playbook site-config-tower.yml -e tower_GUID=${TOWER_GUID} -e osp_GUID=${OSP_GUID} -e opentlc_login=${OPENTLC_LOGIN} -e path_to_opentlc_key=/root/.ssh/mykey.pem -e param_repo_base=${JQ_REPO_BASE} -e opentlc_password=${OPENTLC_PASSWORD} -e REGION_NAME=${REGION} -e EMAIL=${RH_MAIL_ID} -e github_repo=${GITHUB_REPO}
 ----
 
-==== Workstation setup
-
-* Copy your OpenTLC private key to the bastion host under the root user’s home directory and save it under '/root/.ssh/mykey.pem'
-
-[source,text]
-----
-[bastion]# chmod 0400 /root/.ssh/mykey.pem 
-[bastion]# chown root:root /root/.ssh/mykey.pem
-----
-
-* From cloned repo run 'site-setup-workstation.yml' to configure osp workstation as isolated node.
-
-[source,text]
-----
-[bastion]$ sudo -i
-[bastion]# cd ansible_advance_homework
-[bastion]# OSP_GUID=<Openstack for Ansible GUID from mail>
-[bastion]# OPENTLC_LOGIN=<username-company.com>
-[bastion]# ansible-playbook site-setup-workstation.yml -e OSP_GUID=${OSP_GUID} --private-key=/root/.ssh/mykey.pem -u ${OPENTLC_LOGIN}
-[bastion]# 
-[bastion]# 
-[bastion]# 
-[bastion]# 
-[bastion]# 
-[bastion]# 
-[bastion]# 
-[bastion]# 
-----
 
 .List of Playbooks
 [%header,cols=2*]
@@ -79,3 +80,56 @@
 | roles/config-tower/tasks/workflow_template.yml | genrate workflow from `workflow.yml` file
 | roles/config-tower/tasks/post-config-tower.yml | any post config jobs
 |===
+
+
+==== Section Documentation
+
+30%: Basic Requirements sections
+ . Using a clear and consistent style
+    All variables are specified in 'var' directory of each role
+
+. Making sure that plays and tasks are self-documenting, with clear and meaningful names
+    All tasks are self documented with names and provide meaningful description of what the task is doing
+
+. Making sure that the repositories are fully self-contained
+    No additional connectivity and self-containment obtained except from openstack certificates which is added manually
+
+. Using roles extensively to achieve a high degree of reuse and modularity
+    Role reusal for QA and Prod environments. The same roles are used to prepare 3 tier app on both deployments
+
+. Making sure that optimal modules are used throughout
+    Avoided using shell and command modules as well as curl module for smoke testing website (used uri module for QA and Prod)
+
+. Using templates throughout, making sure they are clearly marked as "Ansible generated"
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+. Using handlers where appropriate
+    Using handlers for restarting services in 3-tier app deployment
+
+    Using Ansible Vault to protect sensitive information
+
+
+
+20%: Provision QA Environment (including smoke test)
+limitation: 
+**for the moment the openstack certificates are added statically. This is because there was an error during opennstack keypair creation because certificates contained "ANSIBLE MANAGED" lines and could not be parsed propperly by os_keypair module
+** internal repository is injected through a raw script, through userdata in os_server module because cloud-init write_files function was generating python exception. Repository server IP is specified through repo_ip variable and instances along with their details, flavours, etc. are taken from vars directory for osp_servers variable and looped through values.
+** floating IP addresses are assigned to all instnaces in the project. With additional time this would have to be changed so that floating IP is only assigned to frontend server and delegation is used to configure the backend app servers and db server, as only external communication will be happening from frontend
+** after instance deployment the play waits for instances to be available on port 22 as this is the port that will be used for further configuration. The timeout for waiting on instance availability was set to 300 seconds.
+** os_server_facts module is used to add instances dynamically to inventory
+** in base-config role "curl" package is installed on all servers in the app as it may be needed for further testing
+** in lb-tier haproxy loadbalancer is installed, jinja template for haproxy for loadbalancing between app servers using round robin is pushed and handler notified to restart haproxy after pushing new configuration 
+** in app-tier tomcat is instaleed, web root created and jinja template for default page pushed. Afterwards notification is sent to handler to restart tomcat
+** database configuration section is taken from ansible-galaxy repository https://galaxy.ansible.com/geerlingguy/postgresql and used with defaults along with gathering facts for db tier
+
+
+
+25%: Provision Production Environment (including smoke test)
+** provisioning production environment is done from existing script and roles. For site smoke check there are 2 checks configured: one for testing website availability locally and another one for testing site availability globally using delegation to localhost
+
+25%: Design Ansible Tower Workflow Job Template
+**fixed module and command typos in workflow
+
+
+
+
+

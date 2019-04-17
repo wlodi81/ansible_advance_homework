@@ -1,14 +1,5 @@
 ---
 
-# tasks file for osp.servers
-#
-# - name: Add dynamic host to inventory
-#   add_host:
-#     name: workstation-{{OSP_GUID}}.rhpds.opentlc.com
-#     groups: workstations
-#     ansible_user: cloud-user
-#   register: out
-
 - name: copy openstack.pub to workstation
   lineinfile:
     path: /home/cloud-user/.ssh/openstack.pub
@@ -55,13 +46,13 @@
       -----END RSA PRIVATE KEY-----
 
 
+
 - name: Create keypair
   os_keypair:
     state: present
     name: os_key
 #     key: /home/cloud-user/.ssh/openstack.pem
     public_key_file: /home/cloud-user/.ssh/openstack.pub
-#  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
 
 - name: Create new server instances and attaches them a network and passes metadata to the instance
@@ -82,47 +73,43 @@
       cat << EOF > /etc/yum.repos.d/internal.repo
       [rhel-7-server-rpms]
       name=Red Hat Enterprise Linux 7
-      baseurl=http://192.168.0.5/repos/rhel-7-server-rpms
+      baseurl=http://{{ repo_ip }}/repos/rhel-7-server-rpms
       enabled=1
       gpgcheck=0
       
       [rhel-7-server-rh-common-rpms]
       name=Red Hat Enterprise Linux 7 Common
-      baseurl=http://192.168.0.5/repos/rhel-7-server-rh-common-rpms
+      baseurl=http://{{ repo_ip }}/repos/rhel-7-server-rh-common-rpms
       enabled=1
       gpgcheck=0
       
       [rhel-7-server-extras-rpms]
       name=Red Hat Enterprise Linux 7 Extras
-      baseurl=http://192.168.0.5/repos/rhel-7-server-extras-rpms
+      baseurl=http://{{ repo_ip }}/repos/rhel-7-server-extras-rpms
       enabled=1
       gpgcheck=0
       
       [rhel-7-server-optional-rpms]
       name=Red Hat Enterprise Linux 7 Optional
-      baseurl=http://192.168.0.5/repos/rhel-7-server-optional-rpms
+      baseurl=http://{{ repo_ip }}/repos/rhel-7-server-optional-rpms
       enabled=1
       gpgcheck=0
       {% endraw %}
 
   loop: "{{ osp_servers|dict2items }}"
 
-#  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
-
-- name: Add router to the project
+- name: Add logical router to the project
   os_router:
     state: present
     name: router-instance
     network: ext_network
-#  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
 
 # - debug:
 #     msg: "{{item.value.meta[0].deployment_name}}"
 #   loop: "{{osp_servers|dict2items}}"
 
-
-- name: Add floating IP to Servers
+- name: Add floating IPs to Openstack instances
   os_floating_ip:
     state: present
     reuse: true
@@ -132,18 +119,13 @@
     timeout: 180
   loop: "{{ osp_servers|dict2items }}"
   register: floaters
-#  delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
 
-- name: get server details
+- name: Retrieve instance details from Openstack environment
   os_server_facts:
   register: serverfacts
-#   delegate_to: workstation-{{OSP_GUID}}.rhpds.opentlc.com
-
-
-
 # - debug: var=floaters
 
-- name: Wait for servers to be available
+- name: Wait for servers to be available on port 22
   wait_for:
     host: "{{ item.public_v4 }}"
     port: 22
@@ -151,12 +133,6 @@
     timeout: 300
   loop: "{{ serverfacts.ansible_facts.openstack_servers }}"
   when: item.metadata.deployment_name == "QA"
-
-# - name: enable repos
-#   template:
-#     src: internal.repo.j2
-#     dest: /etc/yum.repos.d/internal.repo
-#     mode: 0644
 
 
 

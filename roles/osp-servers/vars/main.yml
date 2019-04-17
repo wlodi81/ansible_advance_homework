@@ -1,5 +1,10 @@
 ---
 # vars file for osp.servers
+
+# internal redhat repository IP for package installation 
+repo_ip: 192.168.0.5
+
+# details for osp instance deployments to be used in os_server module
 osp_servers:
   frontend:
     name: frontend
