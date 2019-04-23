@@ -53,6 +53,7 @@
     name: os_key
 #     key: /home/cloud-user/.ssh/openstack.pem
     public_key_file: /home/cloud-user/.ssh/openstack.pub
+  ignore_errors: true
 
 
 - name: Create new server instances and attaches them a network and passes metadata to the instance
