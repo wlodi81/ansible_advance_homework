@@ -126,7 +126,7 @@ To prepare environment, pleaes run the below setup
 * provisioning production environment is done from existing script and roles. For site smoke check there are 2 checks configured: one for testing website availability locally and another one for testing site availability globally using delegation to localhost
 
 ===== 25%: Design Ansible Tower Workflow Job Template
-*fixed module and command typos in workflow
+* fixed module and command typos in workflow
 
 
 
