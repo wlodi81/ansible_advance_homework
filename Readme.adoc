@@ -101,12 +101,12 @@ To prepare environment, pleaes run the below setup
     Avoided using shell and command modules as well as curl module for smoke testing website (used uri module for QA and Prod)
 
 . Using templates throughout, making sure they are clearly marked as "Ansible generated"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    not currently done, normally would have placed a global variable {{"Ansible generated"|comment}}
 . Using handlers where appropriate
     Using handlers for restarting services in 3-tier app deployment
 
-    Using Ansible Vault to protect sensitive information
-
+. Using Ansible Vault to protect sensitive information
+    Done in tower
 
 
 ===== 20%: Provision QA Environment (including smoke test)
